@@ -3,9 +3,6 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core"
     xmlns="sap.m">
-    <Page showHeader="false">
-        <content>
-            <core:ComponentContainer id="detailComponentContainer" height="100%" />
-        </content>
+    <Page showHeader="false" id="detailPage">
     </Page>
 </mvc:View>
