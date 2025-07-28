@@ -9,37 +9,14 @@ sap.ui.define([
     return Controller.extend("detailview.controller.DetailView", {
 
         onInit() {
-            // Check if we're in component mode (nested) or route mode
-            const oComponentData = this.getOwnerComponent().getComponentData();
-
-            if (oComponentData && oComponentData.employeeId !== undefined) {
-                // Component mode - use component data
-                // console.log(this._parentController);
-                this._parentController = oComponentData.parentController;
-                // console.log(this._parentController);
-                // console.log(oComponentData.employeeId);
-                this._handleComponentInit(oComponentData.employeeId);
-            } else {
-                // Route mode - use router (for backward compatibility)
-                const oRouter = this.getOwnerComponent().getRouter();
-                const oRoute = oRouter.getRoute("RouteDetailView");
-                oRoute.attachPatternMatched(this._onRouteMatched, this);
-            }
+            const oRouter = this.getOwnerComponent().getRouter();
+            const oRoute = oRouter.getRoute("RouteDetailView");
+            oRoute.attachPatternMatched(this._onRouteMatched, this);
 
             this._loadRolesAndDepartments();
         },
 
-        _handleComponentInit(sEmployeeId) {
-            if (sEmployeeId && sEmployeeId !== "new") {
-                this._loadEmployeeData(sEmployeeId);
-            } else {
-                this._createEmpModel();
-            }
-        },
-
         handleAddPress() {
-            const oComponentData = this.getOwnerComponent().getComponentData();
-            oComponentData.employeeId = "new";
             // Navigate to DetailView với parameter "new"
             const oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("RouteDetailView", {
@@ -48,27 +25,16 @@ sap.ui.define([
         },
 
         handleEmpPress() {
-            // Check if we're in component mode
+            // Check if we have a parent controller (when used as nested component)
             const oComponentData = this.getOwnerComponent().getComponentData();
+            if (oComponentData && oComponentData.parentController) {                
+                // Use parent router to navigate back to list view
+                const oParentRouter = oComponentData.parentController.getOwnerComponent().getRouter();
+                oParentRouter.navTo("RouteListView");
 
-            if (oComponentData && this._parentController) {
-                // Component mode - close dialog via parent controller
-                // Since the structure is: Dialog -> ComponentContainer -> Component -> View
-                // We need to traverse up to find the dialog
-                this._closeDialogFromComponent();
             } else {
-                // Route mode - navigate to ListView 
-                const oRouter = this.getOwnerComponent().getRouter();
-                oRouter.navTo("RouteListView");
-            }
-        },
-
-        _closeDialogFromComponent() {
-            // Method 1: Use parent controller's stored dialog reference (most reliable)
-            if (this._parentController && this._parentController._currentDialog) {
-                console.log("Closing dialog via parent controller reference");
-                this._parentController._currentDialog.close();
-                return;
+                // Fallback: use window.history.back() or close dialog
+                window.history.back();
             }
         },
 

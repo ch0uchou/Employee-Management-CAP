@@ -5,11 +5,8 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
-    "sap/ui/core/ComponentContainer",
-    "sap/m/Dialog",
-    "sap/m/Button",
     "../model/formatter"
-], (Controller, JSONModel, Filter, FilterOperator, MessageBox, MessageToast, ComponentContainer, Dialog, Button, formatter) => {
+], (Controller, JSONModel, Filter, FilterOperator, MessageBox, MessageToast, formatter) => {
     "use strict";
 
     return Controller.extend("listview.controller.ListView", {
@@ -114,8 +111,11 @@ sap.ui.define([
         },
 
         handleAddPress() {
-            // Show DetailView component for new employee
-            this._showDetailViewDialog("new");
+            // Navigate to DetailView với parameter "new"
+            const oRouter = this.getOwnerComponent().getRouter();
+            oRouter.navTo("RouteDetailView", {
+                employeeId: "new"
+            });
         },
 
         handleEmpPress() {
@@ -129,68 +129,10 @@ sap.ui.define([
             const oContext = oEvent.getSource().getBindingContext();
             const oEmployeeData = oContext.getObject();
 
-            // Create DetailView component in a dialog
-            this._showDetailViewDialog(oEmployeeData.ID);
-        },
-
-        _showDetailViewDialog(sEmployeeId) {
-            // Use the proper nested component approach with explicit component loading
-            sap.ui.require([
-                "sap/ui/core/Component"
-            ], (Component) => {
-                Component.create({
-                    name: "detailview",
-                    url: "/detailview/webapp",
-                    manifest: true,
-                    settings: {
-                        componentData: {
-                            employeeId: sEmployeeId,
-                            parentController: this
-                        }
-                    }
-                }).then((oComponent) => {
-                    // Create ComponentContainer with the loaded component
-                    const oComponentContainer = new ComponentContainer({
-                        component: oComponent,
-                        height: "100%"
-                    });
-
-                    // Create dialog to hold the component
-                    const oDialog = new Dialog({
-                        title: sEmployeeId === "new" ? "Add New Employee" : "Edit Employee",
-                        contentWidth: "80%",
-                        contentHeight: "80%",
-                        resizable: true,
-                        draggable: true,
-                        content: [oComponentContainer],
-                        beginButton: new Button({
-                            text: "Close",
-                            press: () => {
-                                oDialog.close();
-                                oDialog.destroy();
-                                oComponent.destroy(); // Clean up component
-                                // Clear the dialog reference
-                                this._currentDialog = null;
-                                // Refresh the employee data after dialog closes
-                                this._refreshEmployeeData();
-                            }
-                        }),
-                        afterClose: () => {
-                            // Clean up when dialog is closed by any means
-                            this._currentDialog = null;
-                        }
-                    });
-
-                    // Store dialog reference for DetailView to access
-                    this._currentDialog = oDialog;
-
-                    // Open dialog
-                    this.getView().addDependent(oDialog);
-                    oDialog.open();
-                }).catch((oError) => {
-                    console.error("Error loading DetailView component:", oError);
-                    MessageToast.show("Error loading form component");
-                });
+            // Navigate to DetailView with employee data
+            const oRouter = this.getOwnerComponent().getRouter();
+            oRouter.navTo("RouteDetailView", {
+                employeeId: oEmployeeData.ID
             });
         },
 
@@ -216,7 +158,7 @@ sap.ui.define([
 
         _deleteEmployee(oContext, oEmployeeData) {
             const oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-
+            
             try {
                 // OData V4 delete using context
                 oContext.delete().then(() => {

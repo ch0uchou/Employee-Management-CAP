@@ -88,8 +88,7 @@
         "type": "View",
         "viewType": "XML",
         "path": "detailview.view",
-        "async": true,
-        "viewPath": "detailview.view"
+        "async": true
       },
       "routes": [
         {
