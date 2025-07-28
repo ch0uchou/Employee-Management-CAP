@@ -18,6 +18,7 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-listview": "cds watch --open listview/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-listview": "cds watch --open listview/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-detailview": "cds watch --open detailview/webapp/index.html?sap-ui-xx-viewCache=false"
   }
 }

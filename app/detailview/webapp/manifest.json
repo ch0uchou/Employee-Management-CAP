@@ -1,0 +1,124 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "detailview",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.18.3",
+      "toolsId": "b70b6aa8-f071-4efb-8102-28f049faf552"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/employees/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.138.1",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "detailview.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "detailview.view",
+        "async": true,
+        "viewPath": "detailview.view"
+      },
+      "routes": [
+        {
+          "name": "DetailView",
+          "pattern": "",
+          "target": [
+            "TargetDetailView"
+          ]
+        },
+        {
+          "name": "RouteDetailView",
+          "pattern": "{employeeId}",
+          "target": [
+            "TargetDetailView"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetDetailView": {
+          "id": "DetailView",
+          "name": "DetailView"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "detailview.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}

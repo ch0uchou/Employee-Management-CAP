@@ -1,0 +1,111 @@
+<mvc:View
+    controllerName="detailview.controller.DetailView"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <ScrollContainer
+        id="detailScrollContainer"
+        vertical="true"
+        height="100%"
+    >
+        <core:Fragment
+            fragmentName="detailview.view.Header"
+            type="XML"
+        />
+        <VBox class="sapUiSmallMargin">
+            <Panel
+                headerText="{i18n>detailTitle}"
+                class="sapUiResponsiveMargin"
+                width="auto"
+            >
+                <content>
+                    <VBox class="sapUiMediumMargin">
+                        <Label text="{i18n>firstName}:" />
+                        <Input 
+                            id="firstNameInput"
+                            value="{employee>/firstName}"
+                            placeholder="{i18n>firstNameInput}"
+                            class="sapUiSmallMarginBottom"
+                        />
+                        
+                        <Label text="{i18n>lastName}:" />
+                        <Input 
+                            id="lastNameInput"
+                            value="{employee>/lastName}"
+                            placeholder="{i18n>lastNameInput}"
+                            class="sapUiSmallMarginBottom"
+                        />
+                        
+                        <Label text="{i18n>email}:" />
+                        <Input 
+                            id="emailInput"
+                            value="{employee>/email}"
+                            placeholder="{i18n>emailInput}"
+                            type="Email"
+                            class="sapUiSmallMarginBottom"
+                            valueState="{form>/validation/emailState}"
+                            valueStateText="{form>/validation/emailStateText}"
+                            liveChange="onEmailLiveChange"
+                        />
+                        
+                        <Label text="{i18n>department}:" />
+                        <Select 
+                            id="departmentSelect"
+                            selectedKey="{employee>/department_ID}"
+                            items="{select>/departments}"
+                            class="sapUiSmallMarginBottom"
+                        >
+                            <core:Item
+                                key="{select>key}"
+                                text="{select>text}"
+                            />
+                        </Select>
+                        
+                        <Label text="{i18n>role}:" />
+                        <Select 
+                            id="roleSelect"
+                            selectedKey="{employee>/role_ID}"
+                            items="{select>/roles}"
+                            class="sapUiSmallMarginBottom"
+                        >
+                            <core:Item
+                                key="{select>key}"
+                                text="{select>text}"
+                            />
+                        </Select>
+                        
+                        <Label text="{i18n>inputSalary}:" />
+                        <Input 
+                            id="salaryInput"
+                            value="{employee>/salary}"
+                            type="Number"
+                            editable="false"
+                            class="sapUiSmallMarginBottom"
+                        />
+                        
+                        <Label text="{i18n>hireDate}:" />
+                        <DatePicker 
+                            id="hireDatePicker"
+                            value="{employee>/hireDate}"
+                            class="sapUiSmallMarginBottom"
+                        />
+                        
+                        <HBox class="sapUiMediumMarginTop">
+                            <Button
+                                text="{i18n>Save}"
+                                type="Emphasized"
+                                press="onSave"
+                                class="sapUiSmallMarginEnd"
+                            />
+                            <Button
+                                text="{i18n>Cancel}"
+                                press="onCancel"
+                            />
+                        </HBox>
+                    </VBox>
+                </content>
+            </Panel>
+        </VBox>
+    </ScrollContainer>
+</mvc:View>
