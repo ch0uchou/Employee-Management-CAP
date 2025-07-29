@@ -2,8 +2,9 @@ sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageToast",
-    "sap/m/MessageBox"
-], (Controller, JSONModel, MessageToast, MessageBox) => {
+    "sap/m/MessageBox",
+    "sap/ui/core/Component"
+], (Controller, JSONModel, MessageToast, MessageBox, Component) => {
     "use strict";
 
     return Controller.extend("detailview.controller.DetailView", {
@@ -25,13 +26,20 @@ sap.ui.define([
         },
 
         handleEmpPress() {
-            // Navigate to ListView 
-            const oRouter = this.getOwnerComponent().getRouter();
-            oRouter.navTo("RouteListView", {},{
-                TargetDetailView: {
-                    route: "TargetListView"
-                }
-            });
+            this.navToListview();
+        },
+
+        navToListview() {
+            // Check if we have a parent controller (when used as nested component)
+            const oComponentData = this.getOwnerComponent().getComponentData();
+            
+            if (oComponentData) {
+                const oComponent = this.getOwnerComponent();
+                const oParentComponent = Component.getOwnerComponentFor(oComponent);
+
+                const oParentRouter = oParentComponent.getRouter();
+                oParentRouter.navTo("RouteListView");
+              }
         },
 
         onSave() {

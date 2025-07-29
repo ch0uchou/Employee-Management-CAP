@@ -146,12 +146,6 @@ sap.ui.define([
                     parameters: {
                         employeeId: oEmployeeData.ID
                     }
-                },
-                TargetDetailView2: {
-                    route: "RouteDetailView",
-                    parameters: {
-                        employeeId: "new"
-                    }
                 }
             });
         },

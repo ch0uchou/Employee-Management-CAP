@@ -7,18 +7,33 @@
   "private": true,
   "dependencies": {
     "@sap/cds": "^9",
-    "express": "^4"
+    "express": "^4",
+    "@sap/xssec": "^4",
+    "@cap-js/hana": "^2"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2",
-    "@cap-js/cds-types": "^0.13.0"
+    "@cap-js/cds-types": "^0.13.0",
+    "@sap/cds-dk": "^9",
+    "rimraf": "^5.0.5",
+    "mbt": "^1.2.29"
   },
   "scripts": {
     "start": "cds-serve",
     "watch-listview": "cds watch --open listview/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-detailview": "cds watch --open detailview/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-detailview": "cds watch --open detailview/webapp/index.html?sap-ui-xx-viewCache=false",
+    "undeploy": "cf undeploy employee-management --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+  },
+  "cds": {
+    "requires": {
+      "[production]": {
+        "auth": "xsuaa"
+      }
+    }
   }
 }

@@ -82,9 +82,13 @@
     "componentUsages": {
       "detail": {
         "name": "detailview",
-        "url": "/detailview/webapp",
+        "url": "/detailview",
         "settings": {},
-        "lazy": false
+        "componentData": {
+          "menu_code": "detailApp",
+          "menu_path_info": "detailApp"
+        },
+        "lazy": true
       }
     },
     "routing": {
@@ -108,9 +112,13 @@
         },
         {
           "name": "RouteDetailView",
-          "pattern": "detail/{employeeId}",
+          "pattern": "detail/:?query:",
           "target": [
-            "TargetDetailView"
+            {
+              "name": "TargetDetailView",
+              "prefix": "b",
+              "propagateTitle": true 
+            }
           ]
         }
       ],
@@ -131,5 +139,9 @@
       "id": "App",
       "async": true
     }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "employee-management"
   }
 }

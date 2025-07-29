@@ -1,0 +1,195 @@
+_schema-version: 3.3.0
+ID: employee-management
+description: A simple CAP project.
+version: 1.0.0
+modules:
+  - name: employee-management-srv
+    type: nodejs
+    path: gen/srv
+    requires:
+      - name: employee-management-auth
+      - name: employee-management-destination
+      - name: employee-management-db
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    parameters:
+      buildpack: nodejs_buildpack
+      instances: 1
+    build-parameters:
+      builder: npm-ci
+  - name: employee-management-app-deployer
+    type: com.sap.application.content
+    path: gen
+    requires:
+      - name: employee-management-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: app/
+      requires:
+        - artifacts:
+            - detailview.zip
+          name: employeemanagementdetailview
+          target-path: app/
+        - artifacts:
+            - listview.zip
+          name: employeemanagementlistview
+          target-path: app/
+  - name: employeemanagementdetailview
+    type: html5
+    path: app/detailview
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms:
+        []
+  - name: employeemanagementlistview
+    type: html5
+    path: app/listview
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms:
+        []
+  - name: employee-management-destination-content
+    type: com.sap.application.content
+    requires:
+      - name: employee-management-destination
+        parameters:
+          content-target: true
+      - name: employee-management-html5-repo-host
+        parameters:
+          service-key:
+            name: employee-management-html5-repo-host-key
+      - name: employee-management-auth
+        parameters:
+          service-key:
+            name: employee-management-auth-key
+    parameters:
+      content:
+        instance:
+          destinations:
+            - Name: employee-management_html_repo_host
+              ServiceInstanceName: employee-management-html5-service
+              ServiceKeyName: employee-management-html5-repo-host-key
+              sap.cloud.service: employee-management
+            - Authentication: OAuth2UserTokenExchange
+              Name: employee-management_uaa
+              ServiceInstanceName: employee-management-xsuaa-service
+              ServiceKeyName: employee-management-auth-key
+              sap.cloud.service: employee-management
+          existing_destinations_policy: update
+    build-parameters:
+      no-source: true
+
+  - name: employee-management
+    type: approuter.nodejs
+    path: app/router
+    parameters:
+      keep-existing-routes: true
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api # must be used in xs-app.json as well
+          url: ~{srv-url}
+          forwardAuthToken: true
+      - name: employee-management-auth
+      - name: employee-management-html5-rt
+      - name: employee-management-destination
+    provides:
+      - name: app-api
+        properties:
+          app-protocol: ${protocol}
+          app-uri: ${default-uri}
+
+  - name: employee-management-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: employee-management-db
+resources:
+  - name: employee-management-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        tenant-mode: dedicated
+        xsappname: employee-management-${org}-${space}
+        oauth2-configuration:
+          redirect-uris:
+            - https://*~{app-api/app-uri}/**
+      path: ./xs-security.json
+      service: xsuaa
+      service-name: employee-management-xsuaa-service
+      service-plan: application
+    requires:
+      - name: app-api
+  - name: employee-management-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            destinations:
+              - Authentication: NoAuthentication
+                HTML5.DynamicDestination: true
+                HTML5.ForwardAuthToken: true
+                Name: srv-api
+                ProxyType: Internet
+                Type: HTTP
+                URL: ~{srv-api/srv-url}
+              - Authentication: NoAuthentication
+                Name: ui5
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://ui5.sap.com
+              - Authentication: NoAuthentication
+                HTML5.DynamicDestination: true
+                HTML5.ForwardAuthToken: true
+                Name: employee-management-srv-api
+                ProxyType: Internet
+                Type: HTTP
+                URL: ~{srv-api/srv-url}
+            existing_destinations_policy: update
+      service: destination
+      service-plan: lite
+    requires:
+      - name: srv-api
+  - name: employee-management-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-name: employee-management-html5-service
+      service-plan: app-host
+  - name: employee-management-html5-rt
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+  - name: employee-management-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
