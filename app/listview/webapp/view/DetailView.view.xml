@@ -1,8 +1,0 @@
-<mvc:View
-    controllerName="listview.controller.DetailView"
-    xmlns:mvc="sap.ui.core.mvc"
-    xmlns:core="sap.ui.core"
-    xmlns="sap.m">
-    <Page showHeader="false" id="detailPage">
-    </Page>
-</mvc:View>

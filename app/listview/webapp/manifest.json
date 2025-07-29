@@ -82,6 +82,7 @@
     "componentUsages": {
       "detail": {
         "name": "detailview",
+        "url": "/detailview/webapp",
         "settings": {},
         "lazy": false
       }
@@ -119,8 +120,8 @@
           "name": "ListView"
         },
         "TargetDetailView": {
-          "id": "DetailView",
-          "name": "DetailView"
+          "type": "Component",
+          "usage": "detail"
         }
       }
     },

@@ -79,6 +79,14 @@
         }
       ]
     },
+    "componentUsages": {
+      "list": {
+        "name": "listview",
+        "url": "/listview/webapp",
+        "settings": {},
+        "lazy": false
+      }
+    },
     "routing": {
       "config": {
         "routerClass": "sap.m.routing.Router",
@@ -100,9 +108,16 @@
         },
         {
           "name": "RouteDetailView",
-          "pattern": "{employeeId}",
+          "pattern": "detail/{employeeId}",
           "target": [
             "TargetDetailView"
+          ]
+        },
+        {
+          "name": "RouteListView",
+          "pattern": "list",
+          "target": [
+            "TargetListView"
           ]
         }
       ],
@@ -110,6 +125,10 @@
         "TargetDetailView": {
           "id": "DetailView",
           "name": "DetailView"
+        },
+        "TargetListView": {
+          "type": "Component",
+          "usage": "list"
         }
       }
     },

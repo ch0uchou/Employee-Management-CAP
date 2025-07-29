@@ -115,6 +115,13 @@ sap.ui.define([
             const oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("RouteDetailView", {
                 employeeId: "new"
+            }, {
+                TargetDetailView: {
+                    route: "RouteDetailView",
+                    parameters: {
+                        employeeId: "new"
+                    }
+                }
             });
         },
 
@@ -133,6 +140,19 @@ sap.ui.define([
             const oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("RouteDetailView", {
                 employeeId: oEmployeeData.ID
+            }, {
+                TargetDetailView: {
+                    route: "RouteDetailView",
+                    parameters: {
+                        employeeId: oEmployeeData.ID
+                    }
+                },
+                TargetDetailView2: {
+                    route: "RouteDetailView",
+                    parameters: {
+                        employeeId: "new"
+                    }
+                }
             });
         },
 
@@ -158,7 +178,7 @@ sap.ui.define([
 
         _deleteEmployee(oContext, oEmployeeData) {
             const oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
-            
+
             try {
                 // OData V4 delete using context
                 oContext.delete().then(() => {
